@@ -8,6 +8,15 @@ d3.select('.gameboard').insert('svg')
   .attr('width', boardWidth)
   .attr('height', boardHeight);
 
+// animate movement of each circle
+setInterval(function() {
+  d3.select('svg').selectAll('circle')
+  .transition()
+  .duration(2000)
+  .attr('cx', function() {return Math.random() * boardWidth;})
+  .attr('cy', function() {return Math.random() * boardHeight;});
+}, 2000);
+
 // array for circle data (picking random sizes within our board)
 var circleSpecs = [];
 
