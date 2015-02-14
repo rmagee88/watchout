@@ -25,13 +25,38 @@ d3.select('.gameboard').insert('svg')
   .attr('height', boardHeight);
 
 // animate movement of each circle
-setInterval(function() {
+var moveEnemies = function() {
   d3.select('svg').selectAll('circle.enemy')
   .transition()
   .duration(2000)
   .attr('cx', function() {return Math.random() * boardWidth;})
   .attr('cy', function() {return Math.random() * boardHeight;});
-}, 2000);
+};
+
+var checkCollisions = function(){
+  var player = d3.select('circle.player');
+
+  d3.selectAll('circle.enemy').each(function(enemy){
+
+    var enemyX = d3.select(this).attr("cx");
+    var enemyY = d3.select(this).attr("cy");
+    var playerX = player.attr("cx");
+    var playerY = player.attr("cy");
+
+    var xDiff = Math.abs(enemyX - playerX);
+    var yDiff = Math.abs(enemyY - playerY);
+    var proximity = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2))
+
+    if (proximity < 50){
+      //resetScore();
+      console.log("Collision!");
+    }
+
+  });
+};
+
+setInterval(moveEnemies, 2000);
+setInterval(checkCollisions, 50);
 
 // array for circle data (picking random sizes within our board)
 var circleSpecs = [];
