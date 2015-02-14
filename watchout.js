@@ -138,6 +138,10 @@ var dragged = function(d) {
     d3.select(this)
     .attr('cx', x)
     .attr('cy', y);
+
+    socket.emit('sendPlayerPosition', { x: x, y: y });
+
+
 };
 
 var drag = d3.behavior.drag()
