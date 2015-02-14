@@ -8,6 +8,8 @@ body {
 }
 
 .scoreboard {
+  border:5px solid gray;
+  width:150px;
 }
 
 svg {
