@@ -3,6 +3,8 @@
 var boardHeight = 500;
 var boardWidth = 1000;
 var numEnemies = 20;
+var highScore = 0;
+var currScore = 0;
 
 var dragged = function(d) {
   // console.log(d3.event.x, d3.event.y);
@@ -48,15 +50,39 @@ var checkCollisions = function(){
     var proximity = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2))
 
     if (proximity < 50){
-      //resetScore();
       console.log("Collision!");
+      handleCollision();
     }
 
   });
 };
 
+var handleCollision = function() {
+  // reset curr score
+  currScore = 0;
+  d3.select('.current span').data([currScore])
+    .text(function(d) {return d;});
+  // do more stuff!
+};
+
+var scoreCounter = function() {
+  currScore++;
+  d3.select('.current span').data([currScore])
+    .text(function(d) {return d;});
+  if (currScore >= highScore) {
+    highScore = currScore;
+    d3.select('.high span').data([highScore])
+    .text(function(d) {return d;});
+  }
+
+};
+
+// enemies move every 2 secs
 setInterval(moveEnemies, 2000);
+// checking for collisions every 50 ms
 setInterval(checkCollisions, 50);
+// updating score every second
+setInterval(scoreCounter, 1000);
 
 // array for circle data (picking random sizes within our board)
 var circleSpecs = [];
