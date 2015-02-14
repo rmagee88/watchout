@@ -54,6 +54,9 @@ var updateEnemies = function(n) {
     circleSpecs.push([enemyX, enemyY]);
   }
 
+  d3.select('svg').selectAll('circle').data(circleSpecs).exit()
+    .remove();
+
   // adding circles to the board
   d3.select('svg').selectAll('circle').data(circleSpecs).enter()
     .append('circle')
