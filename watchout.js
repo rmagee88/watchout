@@ -2,29 +2,56 @@
 
 var boardHeight = 500;
 var boardWidth = 1000;
-var numEnemies = 20;
 var highScore = 0;
 var currScore = 0;
-
-var dragged = function(d) {
-  // console.log(d3.event.x, d3.event.y);
-    var x = d3.event.x;
-    var y = d3.event.y;
-    d3.select(this)
-    .attr('cx', x)
-    .attr('cy', y);
-};
-
-
-var drag = d3.behavior.drag()
-  // .origin(function(d) { return d; })
-  .on('drag', dragged);
-
+var numCollisions = 0;
+var collision = false;
 
 // set up the board
-d3.select('.gameboard').insert('svg')
-  .attr('width', boardWidth)
-  .attr('height', boardHeight);
+var boardSetup = function() {
+  d3.select('.gameboard').insert('svg')
+    .attr('width', boardWidth)
+    .attr('height', boardHeight);
+
+  // adding player's circle
+  d3.select('svg').insert('circle')
+    .attr('class', 'player')
+    .attr('r', 25)
+    .attr('fill', 'green')
+    .attr('cx', boardWidth / 2)
+    .attr('cy', boardHeight / 2)
+    .call(drag);
+};
+
+var updateEnemies = function(n) {
+  n = n || 20;
+  // array for circle data (picking random sizes within our board)
+  var circleSpecs = [];
+  for (var i = 0; i <= n; i++) {
+    var enemyX = Math.random() * boardWidth;
+    var enemyY = Math.random() * boardHeight;
+    var player = d3.select('.player');
+    var playerLocation = [player.attr('cx'), player.attr('cy')];
+    // checking proximity don't place on top of player
+    var proximity = getProximity(playerLocation[0], playerLocation[1], enemyX, enemyY);
+
+    if (proximity < 50) {
+      enemyX = Math.random() * boardWidth;
+      enemyY = Math.random() * boardHeight;
+    }
+
+    circleSpecs.push([enemyX, enemyY]);
+  }
+
+  // adding circles to the board
+  d3.select('svg').selectAll('circle').data(circleSpecs).enter()
+    .append('circle')
+    .attr('cx', function(d) {return d[0];})
+    .attr('cy', function(d) {return d[1];})
+    .attr('r', 25)
+    .attr('fill', 'black')
+      .attr('class', 'enemy');
+};
 
 // animate movement of each circle
 var moveEnemies = function() {
@@ -37,7 +64,7 @@ var moveEnemies = function() {
 
 var checkCollisions = function(){
   var player = d3.select('circle.player');
-
+  var hit = false;
   d3.selectAll('circle.enemy').each(function(enemy){
 
     var enemyX = d3.select(this).attr("cx");
@@ -45,16 +72,26 @@ var checkCollisions = function(){
     var playerX = player.attr("cx");
     var playerY = player.attr("cy");
 
-    var xDiff = Math.abs(enemyX - playerX);
-    var yDiff = Math.abs(enemyY - playerY);
-    var proximity = Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2))
+    var proximity = getProximity(playerX, playerY, enemyX, enemyY);
 
     if (proximity < 50){
-      console.log("Collision!");
-      handleCollision();
+      hit = true;
+      if (!collision){
+        collision = true;
+        handleCollision();
+      }
     }
-
   });
+
+  if (!hit){
+    collision = false;
+  }
+};
+
+var getProximity = function(playerX, playerY, enemyX, enemyY) {
+  var xDiff = Math.abs(enemyX - playerX);
+  var yDiff = Math.abs(enemyY - playerY);
+  return Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
 };
 
 var handleCollision = function() {
@@ -63,6 +100,9 @@ var handleCollision = function() {
   d3.select('.current span').data([currScore])
     .text(function(d) {return d;});
   // do more stuff!
+  numCollisions++;
+  d3.select('.collisions span').data([numCollisions])
+    .text(function(d) {return d;});
 };
 
 var scoreCounter = function() {
@@ -77,35 +117,29 @@ var scoreCounter = function() {
 
 };
 
+var dragged = function(d) {
+  // console.log(d3.event.x, d3.event.y);
+    var x = d3.event.x;
+    var y = d3.event.y;
+    d3.select(this)
+    .attr('cx', x)
+    .attr('cy', y);
+};
+
+var drag = d3.behavior.drag()
+  // .origin(function(d) { return d; })
+  .on('drag', dragged);
+
+// play the game
+boardSetup();
+updateEnemies();
 // enemies move every 2 secs
-setInterval(moveEnemies, 2000);
+setInterval(moveEnemies, 2000); // get this from the slider
 // checking for collisions every 50 ms
 setInterval(checkCollisions, 50);
 // updating score every second
-setInterval(scoreCounter, 1000);
+setInterval(scoreCounter, 1000); // update this based on difficulty
 
-// array for circle data (picking random sizes within our board)
-var circleSpecs = [];
-
-for (var i = 0; i <= numEnemies; i++) {
-  circleSpecs.push([Math.random() * boardWidth, Math.random() * boardHeight]);
-}
-
-// adding circles to the board
-d3.select('svg').selectAll('circle').data(circleSpecs).enter()
-  .append('circle')
-  .attr('cx', function(d) {return d[0];})
-  .attr('cy', function(d) {return d[1];})
-  .attr('r', 25).attr('class', 'enemy');
-
-// adding player's circle
-d3.select('svg').insert('circle')
-  .attr('class', 'player')
-  .attr('r', 25)
-  .attr('fill', 'green')
-  .attr('cx', boardWidth / 2)
-  .attr('cy', boardHeight / 2)
-  .call(drag);
 
 
 

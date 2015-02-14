@@ -6,3 +6,7 @@ Feel free to use it if you like. */
 body {
   margin:0;
 }
+circle.enemy{
+  background-repeat: no-repeat;
+  background:red;
+}
