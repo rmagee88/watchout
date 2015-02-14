@@ -6,6 +6,8 @@ var highScore = 0;
 var currScore = 0;
 var numCollisions = 0;
 var collision = false;
+var imgSrc = 'shuriken.png';
+var transitionTime = 2000;
 
 // set up the board
 var boardSetup = function() {
@@ -13,10 +15,19 @@ var boardSetup = function() {
     .attr('width', boardWidth)
     .attr('height', boardHeight);
 
+  d3.select('svg').insert('defs').insert('pattern').insert('image');
+
+  d3.select('pattern').attr('id', 'enemyPattern')
+    .attr('width', 15).attr('height', 15)
+    .attr('patternUnits', 'objectBoundingBox');
+
+  d3.select('image').attr('width', 30).attr('height', 30)
+    .attr('xlink:href', imgSrc);
+
   // adding player's circle
   d3.select('svg').insert('circle')
     .attr('class', 'player')
-    .attr('r', 25)
+    .attr('r', 15)
     .attr('fill', 'green')
     .attr('cx', boardWidth / 2)
     .attr('cy', boardHeight / 2)
@@ -48,8 +59,8 @@ var updateEnemies = function(n) {
     .append('circle')
     .attr('cx', function(d) {return d[0];})
     .attr('cy', function(d) {return d[1];})
-    .attr('r', 25)
-    .attr('fill', 'black')
+    .attr('r', 15)
+    .attr('fill', 'url(#enemyPattern)') // url(#enemyPattern)
       .attr('class', 'enemy');
 };
 
@@ -57,7 +68,7 @@ var updateEnemies = function(n) {
 var moveEnemies = function() {
   d3.select('svg').selectAll('circle.enemy')
   .transition()
-  .duration(2000)
+  .duration(transitionTime)
   .attr('cx', function() {return Math.random() * boardWidth;})
   .attr('cy', function() {return Math.random() * boardHeight;});
 };
@@ -134,7 +145,7 @@ var drag = d3.behavior.drag()
 boardSetup();
 updateEnemies();
 // enemies move every 2 secs
-setInterval(moveEnemies, 2000); // get this from the slider
+var moveInterval = setInterval(moveEnemies, transitionTime);
 // checking for collisions every 50 ms
 setInterval(checkCollisions, 50);
 // updating score every second

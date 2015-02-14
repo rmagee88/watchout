@@ -5,8 +5,12 @@ Feel free to use it if you like. */
 
 body {
   margin:0;
+  background:;
 }
-circle.enemy{
-  background-repeat: no-repeat;
-  background:red;
+
+circle.enemy {
+  /*-webkit-animation:spin 4s linear infinite;*/
 }
+
+/*@-webkit-keyframes spin { 100% { -webkit-transform: rotate(360deg);}}*/
+
