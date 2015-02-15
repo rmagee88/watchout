@@ -36,7 +36,7 @@ io.on('connection', function (socket) {
   //Get current players
   for(var key in io.sockets.connected){
     if (key !== socket.id){
-      var data = {}
+      var data = {};
       data.key = key;
       data.position = currentPositions[key];
       socket.emit('newPlayer', data);
@@ -48,15 +48,12 @@ io.on('connection', function (socket) {
   d.key = socket.id;
   socket.broadcast.emit('newPlayer', d);
 
-//  socket.broadcast.emit('startGame', io.engine.clientsCount);
-//  io.sockets.emit('enemyLocations', generateEnemyPosition());
-
 //  socket.broadcast.emit('news', { hello: 'world' });
   socket.on('sendPlayerPosition', function (data) {
       currentPositions[socket.id] = data;
-      console.log(socket.id)
-      console.log(data)
-      var d = {}
+      console.log(socket.id);
+      console.log(data);
+      var d = {};
       d.position = data;
       d.id = socket.id;
       socket.broadcast.emit('recievePlayerPosition', d);
@@ -70,15 +67,6 @@ io.on('connection', function (socket) {
 setInterval(function() {
     io.sockets.emit('updateEnemyLocation', generateEnemyPosition());
   }, 2000);
-
-var startNewGame = function(socket) {
-  // does stuff
-  // how many players are there
-
-  // new enemy locations
-  // broadcast
-  // generateEnemy()
-};
 
 var generateEnemyPosition = function(){
   //Generate 20 enemy positions

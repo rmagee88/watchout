@@ -3,7 +3,7 @@ var socket = io('http://localhost:8000');
 var enemies;
 
 socket.on('recievePlayerPosition', function (data) {
-  console.log(data)
+  console.log(data);
   d3.select('.competitor[data-player-id='+data.id+']')
   .attr('cx', data.position.x)
   .attr('cy', data.position.y);
@@ -11,15 +11,15 @@ socket.on('recievePlayerPosition', function (data) {
 
 socket.on('updateEnemyLocation', function (data) {
   moveEnemies(data);
-}); 
+});
 
 socket.on('newPlayer', function (data) {
-  console.log("Create new player", data)
+  console.log('Create new player', data);
   createPlayer(true, data.key, data.position);
-}); 
+});
 socket.on('removePlayer', function (data) {
-  d3.select('[data-player-id='+data+']').remove()
-}); 
+  d3.select('[data-player-id='+data+']').remove();
+});
 
 
 var boardHeight = 500;
@@ -42,16 +42,16 @@ var boardSetup = function() {
 
 function createPlayer(enemy, id, currentPosition){
   var player = d3.select('svg').insert('circle').attr('r', 15).attr('cx', boardWidth / 2).attr('cy', boardHeight / 2)
-  
+
   if (!enemy){
     player.attr('class', 'player').attr('fill', 'green').call(drag);
   }else{
     player.attr('class', 'competitor').attr('fill', 'orange').attr("data-player-id",id);
-  } 
-  console.log(enemy, id, currentPosition)
+  }
+  console.log(enemy, id, currentPosition);
   if (currentPosition){
-    player.attr('cx', currentPosition.x).attr('cy', currentPosition.y)
-  }   
+    player.attr('cx', currentPosition.x).attr('cy', currentPosition.y);
+  }
 }
 
 
