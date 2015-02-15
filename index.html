@@ -6,68 +6,18 @@
   </head>
   <body>
     <div class="scoreboard">
-      <!-- Modify the scoreboard when important events occur in your game! -->
       <div class="high">High score: <span>0</span></div>
       <div class="current">Current score: <span>0</span></div>
       <div class="collisions">Collisions: <span>0</span></div>
     </div>
 
-    <div class="options">
-      <!-- <p>Num Enemies (right is more)</p>
-      <div id="enemies" style="width:260px; margin:15px;"></div> -->
-      <!-- <p>Speed (left is faster)</p>
-      <div id="speed" style="width:260px; margin:15px;"></div> -->
-    </div>
-    <div class="gameboard">
-    </div>
+    <div class="gameboard"></div>
+
     <script src="d3.js" charset="utf-8"></script>
     <script src="https://cdn.socket.io/socket.io-1.3.3.js"></script>
-    <script>
-      var socket = io('http://localhost:8080');
-      socket.on('recievePlayerPosition', function (data) {
-        d3.select('.player')
-        .attr('cx', data.x)
-        .attr('cy', data.y);
-      });
-      socket.on('enemyLocations', function (data) {
-        updateEnemies(data);
-      });
-      socket.on('updateEnemyLocation', function (data) {
-        console.log(data);
-        moveEnemies(data);
-      });
-    </script>
-    <script src="https://code.jquery.com/jquery-2.1.3.min.js"></script>
-    <script src="https://code.jquery.com/ui/1.11.3/jquery-ui.min.js"></script>
+    <script src='watchout-helpers.js'></script>
+
     <script src='watchout.js'></script>
-    <script>
-  $(function() {
-    $( "#enemies" ).slider({
-      value: 20,
-      orientation: "horizontal",
-      range: "min",
-      min: 5,
-      max: 100,
-      animate: true,
-      slide: function( event, ui ) {
-        updateEnemies(ui.value);
-      }
-    });
-    $( "#speed" ).slider({
-      value: 2,
-      step: .1,
-      orientation: "horizontal",
-      range: "min",
-      min: .5,
-      max: 5,
-      animate: true,
-      slide: function( event, ui ) {
-        transitionTime = ui.value * 1000;
-        clearInterval(moveInterval);
-        moveInterval = setInterval(moveEnemies, transitionTime);
-      }
-    });
-  });
-  </script>
+   
   </body>
 </html>

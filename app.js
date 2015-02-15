@@ -1,8 +1,13 @@
+var boardWidth = 1000;
+var boardHeight = 500;
+
 var app = require('http').createServer(handler)
 var io = require('socket.io')(app);
 var fs = require('fs');
 
-app.listen(8080);
+var currentPositions = {};
+
+app.listen(8000);
 
 function handler (req, res) {
 
@@ -28,19 +33,37 @@ function handler (req, res) {
 
 io.on('connection', function (socket) {
 
-  socket.broadcast.emit('startGame', io.engine.clientsCount);
-  io.sockets.emit('enemyLocations', generateEnemyPosition());
+  //Get current players
+  for(var key in io.sockets.connected){
+    if (key !== socket.id){
+      var data = {}
+      data.key = key;
+      data.position = currentPositions[key];
+      socket.emit('newPlayer', data);
+    }
+  }
 
-  console.log("SOCKET:");
-  console.log(socket.id);
+  //Tell current players
+  var d = {};
+  d.key = socket.id;
+  socket.broadcast.emit('newPlayer', d);
+
+//  socket.broadcast.emit('startGame', io.engine.clientsCount);
+//  io.sockets.emit('enemyLocations', generateEnemyPosition());
 
 //  socket.broadcast.emit('news', { hello: 'world' });
   socket.on('sendPlayerPosition', function (data) {
-      socket.broadcast.emit('recievePlayerPosition', data);
+      currentPositions[socket.id] = data;
+      console.log(socket.id)
+      console.log(data)
+      var d = {}
+      d.position = data;
+      d.id = socket.id;
+      socket.broadcast.emit('recievePlayerPosition', d);
   });
 
   socket.on('disconnect', function () {
-    socket.broadcast.emit('startGame', io.engine.clientsCount);
+    io.sockets.emit('removePlayer', socket.id);
   });
 });
 
@@ -57,16 +80,12 @@ var startNewGame = function(socket) {
   // generateEnemy()
 };
 
-var generateEnemyPosition = function(n, boardWidth, boardHeight){
-  n = n || 20;
-  boardWidth = boardWidth || 1000;
-  boardHeight = boardHeight || 500;
-  // array for circle data (picking random sizes within our board)
+var generateEnemyPosition = function(){
+  //Generate 20 enemy positions
   var enemyLocations = [];
-  for (var i = 0; i <= n; i++) {
-    var enemyX = Math.random() * boardWidth;
-    var enemyY = Math.random() * boardHeight;
-    enemyLocations.push([enemyX, enemyY]);
+  for (var i = 0; i <= 20; i++) {
+    enemyLocations.push([Math.random() * boardWidth, Math.random() * boardHeight]);
   }
+
   return enemyLocations;
 };

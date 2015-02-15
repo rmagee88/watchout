@@ -12,6 +12,10 @@ body {
   width:150px;
 }
 
+circle.enemy{
+	opacity: 0;
+}
+
 svg {
   border:5px solid black;
 }
